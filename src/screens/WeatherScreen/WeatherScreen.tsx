@@ -108,7 +108,8 @@ const WeatherScreen = () => {
           }}
           fetchDetails
           textInputProps={{
-            value: fieldValue || params.cityInfo.cityName,
+            value:
+              params && params.cityInfo ? params.cityInfo.cityName : fieldValue,
             onChangeText: text => setFieldValue(text),
           }}
           styles={{

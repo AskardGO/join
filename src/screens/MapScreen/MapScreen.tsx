@@ -124,7 +124,6 @@ const MapScreen = () => {
   };
 
   const handleCalloutPress = () => {
-    // Navigate to the weather screen with city info
     if (pointCityInfo && fullCityInfo) {
       navigate(
         'Weather' as never,
@@ -164,7 +163,7 @@ const MapScreen = () => {
               onPress={handleCalloutPress}
               style={styles.callout}
               renderToHardwareTextureAndroid>
-              {pointCityInfo && fullCityInfo && (
+              {pointCityInfo && fullCityInfo && cityTemp && (
                 <Column>
                   <Typography variant="t16" color={Colors.gray['500']}>
                     {`${pointCityInfo.cityName}, ${fullCityInfo.sys.country}`}

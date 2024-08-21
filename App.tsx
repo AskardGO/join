@@ -1,118 +1,78 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import MapScreen from './src/screens/MapScreen/MapScreen.tsx';
+import WeatherScreen from './src/screens/WeatherScreen/WeatherScreen.tsx';
+import {BaseProps} from './src/shared/globalProps.ts';
+import {StatusBar} from 'react-native';
+import Colors from './src/shared/ui/colors/colors.ts';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export type RootStackParamList = {
+  Map: undefined;
+  Weather: undefined;
+};
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+export type WeatherStackParamList = {
+  WeatherScreen: {cityInfo: {cityName: string; lat: number; lon: number}};
+  SearchScreen: undefined;
+};
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const WeatherStack = createNativeStackNavigator<WeatherStackParamList>();
+
+const WeatherStackNavigator = () => (
+  <WeatherStack.Navigator
+    initialRouteName="WeatherScreen"
+    {...BaseProps.navigatorProps}>
+    <WeatherStack.Screen name="WeatherScreen" component={WeatherScreen} />
+  </WeatherStack.Navigator>
+);
+
+const Tab = createBottomTabNavigator();
+
+const App: React.FC = () => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({route}) => ({
+            tabBarHideOnKeyboard: true,
+            tabBarIcon: ({color, size}) => {
+              let iconName: string = '';
+
+              if (route.name === 'Map') {
+                iconName = 'map-marker';
+              } else if (route.name === 'Weather') {
+                iconName = 'weather-cloudy';
+              }
+
+              return <Icon name={iconName} size={size} color={color} />;
+            },
+            headerShown: false,
+            tabBarActiveTintColor: Colors.primary.main,
+            tabBarInactiveTintColor: Colors.gray[500],
+            tabBarStyle: {
+              backgroundColor: Colors.background,
+              borderTopWidth: 0,
+              elevation: 5,
+              shadowOpacity: 0.3,
+              shadowRadius: 10,
+              shadowColor: Colors.gray[300],
+              height: 60,
+            },
+            tabBarLabelStyle: {
+              fontSize: 12,
+              marginBottom: 5,
+            },
+          })}>
+          <Tab.Screen name="Map" component={MapScreen} />
+          <Tab.Screen name="Weather" component={WeatherStackNavigator} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </>
   );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+};
 
 export default App;
